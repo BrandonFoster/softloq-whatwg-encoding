@@ -1,0 +1,4 @@
+.vscode/
+.doxygen/
+build/
+Doxyfile.bak
