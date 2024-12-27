@@ -1,0 +1,3 @@
+[submodule "softloq-whatwg-infra"]
+	path = softloq-whatwg-infra
+	url = https://github.com/BrandonFoster/softloq-whatwg-infra.git
