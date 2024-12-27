@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.10...3.29)
 project(softloq-whatwg-encoding-project VERSION 1.0.0 LANGUAGES CXX)
-option(BUILD_SHARED_LIBS "Generate Shared Library" OFF)
-option(SOFTLOQ_WHATWG_ENCODING_BUILD_TESTING "Generate Unit-Testing" OFF)
+option(BUILD_SHARED_LIBS "Generate shared library" OFF)
+option(SOFTLOQ_WHATWG_ENCODING_BUILD_TESTING "Generate unit-testing" OFF)
+option(SOFTLOQ_WHATWG_ENCODING_MONOLITHIC_BUILD "Builds everything in one library" OFF)
 
 # Build settings
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -30,12 +31,33 @@ if(BUILD_SHARED_LIBS)
 endif()
 
 # Library build
-file(GLOB_RECURSE CXX_FILES src/**.cpp)
-add_library(softloq-whatwg-encoding ${LIBRARY_TYPE} ${CXX_FILES})
-add_library(softloq::whatwg-encoding ALIAS softloq-whatwg-encoding)
-target_include_directories(softloq-whatwg-encoding PUBLIC include)
-target_compile_definitions(softloq-whatwg-encoding PUBLIC ${PUBLIC_DEFINITIONS})
-target_compile_definitions(softloq-whatwg-encoding PRIVATE ${PRIVATE_DEFINITIONS})
+if(SOFTLOQ_WHATWG_ENCODING_MONOLITHIC_BUILD)
+    # Builds everything in one library
+    file(GLOB_RECURSE SOFTLOQ_WHATWG_ENCODING_MONOLITHIC_CXX_FILES softloq-whatwg-infra/src/**.cpp)
+    set(SOFTLOQ_WHATWG_ENCODING_MONOLITHIC_PUBLIC_INCLUDES softloq-whatwg-infra/include)
+    if(SOFTLOQ_WHATWG_ENCODING_BUILD_SHARED)
+        list(APPEND SOFTLOQ_WHATWG_ENCODING_PUBLIC_DEFINITIONS SOFTLOQ_WHATWG_INFRA_USE_API)
+        list(APPEND SOFTLOQ_WHATWG_ENCODING_PRIVATE_DEFINITIONS SOFTLOQ_WHATWG_INFRA_BUILD_API)
+    endif()
+else()
+    # Build dependencies as separate libraries
+    list(APPEND SOFTLOQ_WHATWG_ENCODING_DEPENDENCIES softloq::whatwg-infra)
+    list(APPEND SOFTLOQ_WHATWG_ENCODING_LINK_LIBRARIES softloq::whatwg-infra)
+    if(NOT TARGET softloq-whatwg-infra)
+        add_subdirectory(softloq-whatwg-infra)
+    endif()
+endif()
+
+if(NOT TARGET softloq-whatwg-encoding)
+    file(GLOB_RECURSE CXX_FILES src/**.cpp)
+    add_library(softloq-whatwg-encoding ${LIBRARY_TYPE} ${CXX_FILES})
+    add_library(softloq::whatwg-encoding ALIAS softloq-whatwg-encoding)
+    add_dependencies(softloq-whatwg-encoding ${SOFTLOQ_WHATWG_ENCODING_DEPENDENCIES})
+    target_include_directories(softloq-whatwg-encoding PUBLIC include ${SOFTLOQ_WHATWG_ENCODING_MONOLITHIC_PUBLIC_INCLUDES})
+    target_compile_definitions(softloq-whatwg-encoding PUBLIC ${PUBLIC_DEFINITIONS})
+    target_compile_definitions(softloq-whatwg-encoding PRIVATE ${PRIVATE_DEFINITIONS})
+    target_link_libraries(softloq-whatwg-encoding ${SOFTLOQ_WHATWG_ENCODING_LINK_LIBRARIES})
+endif()
 
 # Unit testing
 if(BUILD_TESTING AND SOFTLOQ_WHATWG_ENCODING_BUILD_TESTING)
