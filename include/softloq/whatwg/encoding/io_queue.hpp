@@ -75,6 +75,41 @@ public:
     virtual ~io_queue() noexcept = 0;
 
     //--------------//
+
+    // WHATWG list member function overrides and deletes //
+
+    T& front() noexcept = delete;
+    const T& front() const noexcept = delete;
+    T& back() noexcept = delete;
+    const T& back() const noexcept = delete;
+
+    void append(const T& item) noexcept;
+    void append(T&& item) noexcept;
+    void pop_back() noexcept;
+
+    void prepend(const T& item) noexcept;
+    void prepend(T&& item) noexcept;
+    void pop_front() noexcept;
+
+    void extend(const infra_list& list) noexcept;
+    void extend(infra_list&& list) noexcept;
+
+    void replace(const T& item, const std::function<const bool (const T& item)>& cond) noexcept;
+
+    void insert(const size_type index, const T& item) noexcept;
+    void insert(const size_type index, T&& item) noexcept;
+
+    void remove(const T& item) noexcept;
+    void remove_if(const std::function<const bool (const T& item)>& cond) noexcept;
+    
+    void clear() noexcept;
+
+    const bool contains(const T& item) const noexcept;
+
+    void sort_ascending() noexcept;
+    void sort_descending() noexcept;
+    
+    //------------------//
 };
 
 template <class T> class io_queue_immediate : public io_queue<T>
