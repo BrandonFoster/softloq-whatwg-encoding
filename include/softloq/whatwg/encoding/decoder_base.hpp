@@ -8,6 +8,7 @@
 #define SOFTLOQ_WHATWG_ENCODING_DECODER_BASE_HPP
 
 #include "softloq/whatwg/encoding/lib_macro.hpp"
+#include "softloq/whatwg/encoding/io_queue.hpp"
 
 namespace softloq::whatwg
 {

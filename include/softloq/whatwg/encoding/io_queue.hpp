@@ -9,9 +9,115 @@
 
 #include "softloq/whatwg/encoding/lib_macro.hpp"
 
+#include <softloq/whatwg/infra/structure/list.hpp>
+
+#include <optional>
+
 namespace softloq::whatwg
 {
-    
+template <class T> class io_queue_item
+{
+public:
+    // constructors //
+
+    io_queue_item() noexcept;
+    io_queue_item(const T& item) noexcept;
+    io_queue_item(T&& item) noexcept;
+    io_queue_item(const io_queue_item& src) noexcept;
+    io_queue_item(io_queue_item&& src) noexcept;
+    ~io_queue_item() noexcept;
+
+    //--------------//
+
+    // assignments //
+
+    io_queue_item& operator=(const T& item) noexcept;
+    io_queue_item& operator=(T&& item) noexcept;
+    io_queue_item& operator=(const io_queue_item& src) noexcept;
+    io_queue_item& operator=(io_queue_item&& src) noexcept;
+
+    //-------------//
+
+    // item member functions //
+
+    T& value() noexcept;
+    const T& value() const noexcept;
+
+    const bool is_end_of_queue() const noexcept;
+
+    //-----------------------//
+
+    // comparison functions //
+
+    const bool operator<(const io_queue_item& b) const noexcept;
+    const bool operator==(const io_queue_item& b) const noexcept;
+
+    //----------------------//
+
+private:
+    std::optional<T> item;
+};
+}
+
+// output functions //
+
+template <class T> std::ostream& operator<<(std::ostream& out, const softloq::whatwg::io_queue_item<T>& item) noexcept;
+
+//------------------//
+
+namespace softloq::whatwg
+{
+template <class T> class io_queue : public infra_list<io_queue_item<T>>
+{
+public:
+    // constructors //
+
+    virtual ~io_queue() noexcept = 0;
+
+    //--------------//
+};
+
+template <class T> class io_queue_immediate : public io_queue<T>
+{
+public:
+    // constructors //
+
+    io_queue_immediate() noexcept;
+    io_queue_immediate(const std::initializer_list<T>& values) noexcept;
+    io_queue_immediate(const io_queue_immediate& src) noexcept;
+    io_queue_immediate(io_queue_immediate&& src) noexcept;
+    ~io_queue_immediate() noexcept;
+
+    //--------------//
+
+    // assignments //
+
+    io_queue_immediate& operator=(const io_queue_immediate& src) noexcept;
+    io_queue_immediate& operator=(io_queue_immediate&& src) noexcept;
+
+    //-------------//
+};
+
+template <class T> class io_queue_stream : public io_queue<T>
+{
+public:
+    // constructors //
+
+    io_queue_stream() noexcept;
+    io_queue_stream(const std::initializer_list<T>& values) noexcept;
+    io_queue_stream(const io_queue_stream& src) noexcept;
+    io_queue_stream(io_queue_stream&& src) noexcept;
+    ~io_queue_stream() noexcept;
+
+    //--------------//
+
+    // assignments //
+
+    io_queue_stream& operator=(const io_queue_stream& src) noexcept;
+    io_queue_stream& operator=(io_queue_stream&& src) noexcept;
+
+    //-------------//
+};
 }
 
 #include "softloq/whatwg/encoding/io_queue.tpp"
