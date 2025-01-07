@@ -7,6 +7,7 @@
 #ifndef SOFTLOQ_WHATWG_ENCODING_HPP
 #define SOFTLOQ_WHATWG_ENCODING_HPP
 
+#include "softloq/whatwg/encoding/io_queue.hpp"
 #include "softloq/whatwg/encoding/utf8.hpp"
 #include "softloq/whatwg/encoding/gbk.hpp"
 #include "softloq/whatwg/encoding/gb18030.hpp"
